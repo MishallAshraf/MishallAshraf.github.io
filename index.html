@@ -90,6 +90,14 @@ p{margin:0 0 14px}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding:0;list-style:none}
 .tags li{font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:999px}
 
+/* writing */
+.post{display:block;padding:18px 20px;margin:0 -20px;border-radius:10px;border:1px solid transparent;color:var(--ink);transition:background .2s,border-color .2s}
+.post:hover{background:var(--surface);border-color:var(--line);text-decoration:none}
+.post .pd{display:block;font-size:12px;color:var(--ink-3)}
+.post .pt{display:block;font-size:18px;font-weight:600;margin:2px 0 6px}
+.post:hover .pt{color:var(--accent)}
+.post .ps{display:block;font-size:15px;color:var(--ink-2)}
+
 /* experience */
 .job{padding:14px 0;border-top:1px solid var(--line)}
 .job:first-of-type{border-top:0}
@@ -147,6 +155,7 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
   <nav class="toc" aria-label="Sections">
     <a href="#about">About</a>
     <a href="#projects">Projects</a>
+    <a href="#writing">Writing</a>
     <a href="#experience">Experience</a>
     <a href="#research">Research</a>
     <a href="#learning">Learning in public</a>
@@ -235,6 +244,15 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
       <ul class="tags"><li>LLM-as-judge</li><li>Cohen's kappa</li><li>Langfuse</li></ul>
     </div>
   </article>
+</section>
+
+<section id="writing">
+  <h2>Writing</h2>
+  <a class="post" href="posts/llm-judge.html">
+    <span class="pd mono">Nov 2026</span>
+    <span class="pt">My LLM judge failed answers that were right</span>
+    <span class="ps">What calibrating a judge for an agent taught me: it misread correct summaries, caught a mistake in my own labels, and changed its verdict on identical input.</span>
+  </a>
 </section>
 
 <section id="experience">

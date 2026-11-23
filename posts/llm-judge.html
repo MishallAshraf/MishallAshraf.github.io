@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My LLM judge failed answers that were right · Mishal Ashraf</title>
+<meta name="description" content="What I learned calibrating an LLM judge for an agent: it misread correct summaries, caught a mistake in my own labels, and gave different verdicts on identical inputs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1c1b19;--ink-2:#55524c;--ink-3:#8a867e;--line:#e4e1d9;--accent:#1f6f5c;--accent-soft:#e3efe9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141413;--surface:#1c1c1a;--ink:#ecebe6;--ink-2:#b3afa6;--ink-3:#7f7b73;--line:#2c2b28;--accent:#6cc4a6;--accent-soft:#1d2e28}}
+:root[data-theme="dark"]{--bg:#141413;--surface:#1c1c1a;--ink:#ecebe6;--ink-2:#b3afa6;--ink-3:#7f7b73;--line:#2c2b28;--accent:#6cc4a6;--accent-soft:#1d2e28}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:680px;margin:0 auto;padding:48px 16px 96px}
+.back{font-size:14px;text-decoration:none;color:var(--ink-3)}
+.back:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.02em;margin:28px 0 10px}
+.meta{font-size:14px;color:var(--ink-3);margin-bottom:32px}
+h2{font-size:21px;margin:40px 0 10px}
+p{margin:0 0 18px}
+ul{padding-left:22px;margin:0 0 18px}
+li{margin:6px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+blockquote{margin:0 0 18px;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface);color:var(--ink-2)}
+table{width:100%;border-collapse:collapse;margin:0 0 18px;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--ink-3);font-weight:500}
+td.n{font-family:"IBM Plex Mono",monospace}
+.take{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:28px 0}
+.take h2{margin-top:0}
+.foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<article class="wrap">
+<a class="back" href="../">← Mishal Ashraf</a>
+<h1>My LLM judge failed answers that were right</h1>
+<div class="meta">November 2026 · 6 min read</div>
+
+<p>I built an agent that triages GitHub issues. It suggests labels, finds duplicates and drafts a reply, and a person has to approve every action before it runs. At the end of each run the agent writes a short summary of what it did.</p>
+
+<p>That summary can lie. It can say "I marked this as a duplicate" when the person rejected that action. So I added an LLM judge to check one narrow thing: <strong>is the summary faithful to what actually happened?</strong></p>
+
+<p>This post is about what went wrong when I started trusting that judge, and what I do differently now.</p>
+
+<h2>The judge said 93%. The real number was 100%.</h2>
+
+<p>In one of my eval runs, the judge marked 2 of 28 summaries as unfaithful. I opened both. Both were correct.</p>
+
+<p>One summary said:</p>
+<blockquote>The duplicate marking was rejected.</blockquote>
+<p>That is exactly what happened: the agent proposed it and the person said no. The judge read "rejected" as "never called" and failed it. The other summary correctly said that the duplicate check had found the two issues to be different, and the judge failed that too.</p>
+
+<p>So the score said 93%, and the truth was 100%. If I hadn't opened the failures by hand, I would have "fixed" an agent that wasn't broken.</p>
+
+<h2>So I tested the judge before trusting it</h2>
+
+<p>I built a small bank of 34 test cases, each one an agent run plus a summary, covering every way a summary can go wrong (claiming an action that didn't run, hiding a rejection, wrong issue number) and some borderline ones. I labelled 16 of them by hand. The other 18 were labelled by Claude using the same rules, and every case records who labelled it.</p>
+
+<p>Then I measured how often each judge agreed with the labels, using Cohen's kappa (1.0 means perfect agreement, 0 means no better than chance):</p>
+
+<table>
+<tr><th>Judge</th><th>16 hand-labelled</th><th>All 34</th></tr>
+<tr><td>gpt-4o-mini</td><td class="n">1.00</td><td class="n">0.93</td></tr>
+<tr><td>Claude Sonnet 5.5</td><td class="n">1.00</td><td class="n">1.00</td></tr>
+</table>
+
+<p>Three things from doing this surprised me.</p>
+
+<h2>1. The judge caught a mistake in my labels</h2>
+
+<p>Both judges disagreed with one of my hand labels. I looked again, and they were right: that case had the same pattern as another one I had marked the opposite way. I had made a slip. Calibration doesn't only test the judge, it tests your labels too.</p>
+
+<h2>2. The same judge gave different answers to the same input</h2>
+
+<p>I ran calibration twice with nothing changed. gpt-4o-mini gave a different verdict on one case the second time. Sonnet gave the same answers both times. A judge that can flip on identical input adds noise to every score it produces, and one run won't show you that.</p>
+
+<h2>3. My test bank was too easy</h2>
+
+<p>On the 16 hand-labelled cases, both judges scored a perfect 1.00. But in real runs, the cheaper judge made the mistakes I described above and the stronger one didn't. My test cases didn't separate the two judges. The real runs did. The next step is to add harder test cases built from the judge's real mistakes, like the "rejected" one.</p>
+
+<h2>What I changed</h2>
+
+<ul>
+<li><strong>Switched the judge to the stronger model,</strong> because it agreed with the labels and gave stable answers.</li>
+<li><strong>Re-judged old runs without rerunning the agent.</strong> I save every run, so I could score the old summaries with the new judge. The two false failures passed. (A first attempt failed another case, because saved runs have the issue text removed for privacy. The re-judge now puts the text back from the local cache first.)</li>
+<li><strong>Kept the judge's job narrow.</strong> Simple rules already catch obvious lies, like claiming an action that never ran. The judge only handles what rules can't, like a wrong issue number or a rejection that's quietly left out.</li>
+</ul>
+
+<div class="take">
+<h2>What I'd tell someone adding an LLM judge</h2>
+<ul>
+<li>Give it one narrow question, not "is this good?"</li>
+<li>Label some cases by hand and measure agreement before you trust its numbers.</li>
+<li>Open every failure by hand at first. Some will be the judge's fault.</li>
+<li>Run it twice on the same input. If the answers change, that's noise in your metric.</li>
+<li>Build test cases from real mistakes, not only the ones you can imagine.</li>
+</ul>
+</div>
+
+<div class="foot">
+<p>The code, test cases and run log are public: <a href="https://github.com/MishallAshraf/issue-triage-agent">issue-triage-agent on GitHub</a>. The judge is in <code>evals/judge.py</code>, the test bank in <code>evals/probes.jsonl</code>, and every run is written up in <code>docs/experiments.md</code>.</p>
+</div>
+</article>
+</body>
+</html>
