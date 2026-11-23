@@ -39,8 +39,10 @@ a:hover{text-decoration:underline}
 .side .role{font-size:19px;margin:10px 0 0;font-weight:500}
 .side .pitch{color:var(--ink-2);margin:16px 0 0;max-width:34ch}
 .motto{margin-top:20px;display:inline-block;font-size:13px;color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
-nav.toc{display:none;margin-top:44px}
-@media(min-width:960px){nav.toc{display:block}}
+nav.toc{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:24px}
+nav.toc a{padding:4px 0}
+nav.toc a::before{display:none}
+@media(min-width:960px){nav.toc{display:block;margin-top:44px}nav.toc a{padding:7px 0}nav.toc a::before{display:block}}
 nav.toc a{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 0}
 nav.toc a::before{content:"";width:28px;height:1px;background:var(--ink-3);transition:width .2s}
 nav.toc a:hover,nav.toc a.on{color:var(--ink);text-decoration:none}
@@ -178,6 +180,7 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
     <strong><span class="dot"></span>Now</strong>
     <ul>
       <li>Looking for a <strong>remote AI Engineer</strong> role (also open to Lahore).</li>
+      <li>New post: <a href="posts/llm-judge.html">My LLM judge failed answers that were right</a>.</li>
       <li>Building <a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph</a>, a LangGraph RAG agent.</li>
       <li>Revising my paper on multi-agent legal summarization.</li>
       <li>Working through an AI system design syllabus, currently on inference and serving.</li>
