@@ -84,6 +84,9 @@ p{margin:0 0 14px}
 .card .body p{margin:0 0 8px}
 .lesson{font-size:14px;color:var(--ink-2);border-left:2px solid var(--accent);padding-left:10px;margin-top:10px}
 .lesson b{color:var(--ink);font-weight:500}
+.fig{margin:14px 0 6px}
+.fig img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fcfcfb}
+.fig figcaption{font-size:13px;color:var(--ink-3);margin-top:6px}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding:0;list-style:none}
 .tags li{font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:999px}
 
@@ -183,6 +186,10 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
       <div class="sub">Benchmark · pgvector, Supabase, Row Level Security</div>
       <div class="body">
         <p>Vector search under Postgres Row Level Security returned nothing for most users, with no error. I built a benchmark (57,600 embeddings, 648 questions) to measure it, then fixed it without changing the security policy: recall@10 of 0.96 or higher at a median latency of 11 ms or less.</p>
+        <figure class="fig">
+          <a href="img/rls-results-by-user.png"><img src="img/rls-results-by-user.png" width="1680" height="920" loading="lazy" alt="Bar chart: with default settings, a user who owns 50% of the table gets all 10 results, but at 10% they get 3.97, at 5% 1.98, at 1% 0.39 and at 0.1% 0.05. With the fix, every user gets all 10."></a>
+          <figcaption>The smaller a user's share of the table, the fewer results they get back, with no error. With the fix, everyone gets all 10.</figcaption>
+        </figure>
         <p>I then turned it into a regression eval for AI coding agents, submitted to Supabase (<a href="https://github.com/supabase/evals/pull/488">open PR #488</a>). It caught Claude Code returning results in the wrong order.</p>
       </div>
       <p class="lesson"><b>Lesson:</b> the worst retrieval bugs don't throw errors. They just return less.</p>
@@ -191,14 +198,15 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
   </article>
 
   <article class="card">
-    <div class="metric"><span class="num">6 / 8</span><span class="what">duplicates found, 1 false positive in 20</span></div>
+    <div class="metric"><span class="num">4–6 / 8</span><span class="what">duplicates found across runs; 1 false positive in 20 in the latest</span></div>
     <div>
       <h3><a href="https://github.com/MishallAshraf/issue-triage-agent">issue-triage-agent <span class="arrow">↗</span></a></h3>
       <div class="sub">Agent · LangGraph, human approval gate</div>
       <div class="body">
         <p>An agent that triages GitHub issues. Every write needs human approval, it uses hybrid search to find related issues, and a stronger model double-checks possible duplicates. A 28-case eval suite runs in CI, so a change that makes it worse fails the build.</p>
+        <p>The gate currently fails on duplicate recall, and I've left it that way. Across three runs with almost no change to the logic, recall went 6, 5, then 4 of 8. With 8 cases, one flipped answer moves it by 12.5 points, so lowering the threshold would only hide the noise. The next step is repeated runs that report a range.</p>
       </div>
-      <p class="lesson"><b>Lesson:</b> an approval gate is only useful if you also measure what it catches.</p>
+      <p class="lesson"><b>Lesson:</b> one run of an LLM eval is a sample, not a result.</p>
       <ul class="tags"><li>LangGraph</li><li>Hybrid search</li><li>CI evals</li><li>Python</li></ul>
     </div>
   </article>
