@@ -86,6 +86,8 @@ p{margin:0 0 14px}
 .card .body p{margin:0 0 8px}
 .lesson{font-size:14px;color:var(--ink-2);border-left:2px solid var(--accent);padding-left:10px;margin-top:10px}
 .lesson b{color:var(--ink);font-weight:500}
+.try{display:inline-block;margin-top:4px;padding:7px 14px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:500;font-size:14px}
+.try:hover{text-decoration:none;opacity:.9}
 .fig{margin:14px 0 6px}
 .fig img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fcfcfb}
 .fig figcaption{font-size:13px;color:var(--ink-3);margin-top:6px}
@@ -181,6 +183,7 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
     <ul>
       <li>Looking for a <strong>remote AI Engineer</strong> role (also open to Lahore).</li>
       <li>New post: <a href="posts/llm-judge.html">My LLM judge failed answers that were right</a>.</li>
+      <li>New demo: <a href="demos/rls/">RLS Search Explorer</a>, an interactive look at search results lost under Row Level Security.</li>
       <li>Building <a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph</a>, a LangGraph RAG agent.</li>
       <li>Revising my paper on multi-agent legal summarization.</li>
       <li>Working through an AI system design syllabus, currently on inference and serving.</li>
@@ -202,6 +205,7 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
           <a href="img/rls-results-by-user.png"><img src="img/rls-results-by-user.png" width="1680" height="920" loading="lazy" alt="Bar chart: with default settings, a user who owns 50% of the table gets all 10 results, but at 10% they get 3.97, at 5% 1.98, at 1% 0.39 and at 0.1% 0.05. With the fix, every user gets all 10."></a>
           <figcaption>The smaller a user's share of the table, the fewer results they get back, with no error. With the fix, everyone gets all 10.</figcaption>
         </figure>
+        <p><a class="try" href="demos/rls/">Try the interactive explorer →</a></p>
         <p>I then turned it into a regression eval for AI coding agents, submitted to Supabase (<a href="https://github.com/supabase/evals/pull/488">open PR #488</a>). It caught Claude Code returning results in the wrong order.</p>
       </div>
       <p class="lesson"><b>Lesson:</b> the worst retrieval bugs don't throw errors. They just return less.</p>
