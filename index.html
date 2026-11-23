@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mishal Ashraf · AI Engineer</title>
+<meta name="description" content="AI Engineer building LLM applications: RAG and hybrid search, tool-calling and multi-agent systems, and evaluation and observability for them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2; --surface:#ffffff; --ink:#1c1b19; --ink-2:#55524c; --ink-3:#8a867e;
+  --line:#e4e1d9; --accent:#1f6f5c; --accent-soft:#e3efe9; --bar:#d9d5cb;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141413; --surface:#1c1c1a; --ink:#ecebe6; --ink-2:#b3afa6; --ink-3:#7f7b73;
+    --line:#2c2b28; --accent:#6cc4a6; --accent-soft:#1d2e28; --bar:#34332f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141413; --surface:#1c1c1a; --ink:#ecebe6; --ink-2:#b3afa6; --ink-3:#7f7b73;
+  --line:#2c2b28; --accent:#6cc4a6; --accent-soft:#1d2e28; --bar:#34332f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:960px){.wrap{grid-template-columns:360px 1fr;gap:64px;padding:0 40px}}
+
+/* left column */
+.side{padding:56px 0 24px}
+@media(min-width:960px){.side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:88px 0 48px}}
+.side h1{font-size:40px;line-height:1.1;margin:0;font-weight:600;letter-spacing:-.02em}
+.side .role{font-size:19px;margin:10px 0 0;font-weight:500}
+.side .pitch{color:var(--ink-2);margin:16px 0 0;max-width:34ch}
+.motto{margin-top:20px;display:inline-block;font-size:13px;color:var(--accent);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
+nav.toc{display:none;margin-top:44px}
+@media(min-width:960px){nav.toc{display:block}}
+nav.toc a{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:7px 0}
+nav.toc a::before{content:"";width:28px;height:1px;background:var(--ink-3);transition:width .2s}
+nav.toc a:hover,nav.toc a.on{color:var(--ink);text-decoration:none}
+nav.toc a:hover::before,nav.toc a.on::before{width:56px;background:var(--ink)}
+.links{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:28px;font-size:15px}
+@media(min-width:960px){.links{margin-top:auto}}
+.links a{color:var(--ink-2)}
+.links a:hover{color:var(--accent)}
+.cvbtn{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:6px}
+
+/* main */
+main{padding:8px 0 80px}
+@media(min-width:960px){main{padding:88px 0 96px}}
+section{padding-top:48px;scroll-margin-top:24px}
+section:first-child{padding-top:0}
+h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:0 0 20px}
+p{margin:0 0 14px}
+.lead{font-size:17px;color:var(--ink-2)}
+.lead strong{color:var(--ink);font-weight:500}
+
+/* now */
+.now{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.now .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle}
+.now ul{margin:10px 0 0;padding-left:20px;color:var(--ink-2)}
+.now li{margin:4px 0}
+
+/* project cards */
+.card{display:grid;grid-template-columns:1fr;gap:6px 24px;padding:22px 20px;border-radius:10px;border:1px solid transparent;transition:background .2s,border-color .2s;margin:0 -20px}
+@media(min-width:640px){.card{grid-template-columns:150px 1fr}}
+.card:hover{background:var(--surface);border-color:var(--line)}
+.metric{font-family:"IBM Plex Mono",monospace}
+.metric .num{font-size:28px;font-weight:600;line-height:1.1;color:var(--accent);display:block}
+.metric .what{font-size:12px;color:var(--ink-3);line-height:1.4;display:block;margin-top:4px}
+.card h3{margin:0;font-size:18px;font-weight:600}
+.card h3 a{color:var(--ink)}
+.card h3 a:hover{color:var(--accent);text-decoration:none}
+.card h3 .arrow{display:inline-block;transition:transform .2s;color:var(--ink-3)}
+.card:hover h3 .arrow{transform:translate(2px,-2px);color:var(--accent)}
+.card .sub{font-size:13px;color:var(--ink-3);margin:2px 0 8px}
+.card .body{color:var(--ink-2);font-size:15px}
+.card .body p{margin:0 0 8px}
+.lesson{font-size:14px;color:var(--ink-2);border-left:2px solid var(--accent);padding-left:10px;margin-top:10px}
+.lesson b{color:var(--ink);font-weight:500}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding:0;list-style:none}
+.tags li{font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:999px}
+
+/* experience */
+.job{padding:14px 0;border-top:1px solid var(--line)}
+.job:first-of-type{border-top:0}
+.job .top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px}
+.job .t{font-weight:600}
+.job .d{font-size:13px;color:var(--ink-3)}
+.job .o{font-size:14px;color:var(--ink-3)}
+.job p{font-size:15px;color:var(--ink-2);margin:6px 0 0}
+
+/* research */
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.paper .title{font-weight:600;font-size:17px}
+.paper .meta{font-size:13px;color:var(--ink-3);margin:4px 0 10px}
+.pill{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink-2)}
+
+/* learning */
+.total{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.total .big{font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:600;color:var(--accent)}
+.total .of{color:var(--ink-3);font-size:14px}
+.track{height:8px;background:var(--bar);border-radius:99px;overflow:hidden;margin-bottom:24px}
+.track span{display:block;height:100%;background:var(--accent);border-radius:99px}
+details.sec{border-top:1px solid var(--line);padding:12px 0}
+details.sec:last-of-type{border-bottom:1px solid var(--line)}
+details.sec summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:1fr auto;gap:4px 16px;align-items:center}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary .n{font-weight:500}
+details.sec summary .n::before{content:"+";display:inline-block;width:18px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+details.sec[open] summary .n::before{content:"−"}
+details.sec summary .c{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-3)}
+details.sec summary .st{grid-column:1/-1;margin-left:18px}
+.mini{height:4px;background:var(--bar);border-radius:99px;overflow:hidden}
+.mini span{display:block;height:100%;background:var(--accent)}
+details.sec ul{margin:10px 0 2px 18px;padding-left:16px;color:var(--ink-2);font-size:14px}
+details.sec li{margin:3px 0}
+.status{font-size:12px;color:var(--accent);margin-left:8px}
+
+/* skills */
+.skills{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.skills{grid-template-columns:170px 1fr}}
+.skills dt{font-size:14px;color:var(--ink-3)}
+.skills dd{margin:0;font-size:15px;color:var(--ink-2)}
+
+footer{color:var(--ink-3);font-size:13px;margin-top:64px}
+.theme{background:none;border:1px solid var(--line);color:var(--ink-2);border-radius:6px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="side">
+  <h1>Mishal Ashraf</h1>
+  <p class="role">AI Engineer</p>
+  <p class="pitch">I build LLM applications (RAG, tool-calling and multi-agent systems) and the evaluations that show whether they work.</p>
+  <span class="motto mono">every claim comes with a number</span>
+  <nav class="toc" aria-label="Sections">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#experience">Experience</a>
+    <a href="#research">Research</a>
+    <a href="#learning">Learning in public</a>
+  </nav>
+  <div class="links">
+    <a class="cvbtn" href="Mishal_Ashraf_CV.pdf">CV (PDF)</a>
+    <a href="https://github.com/MishallAshraf">GitHub</a>
+    <a href="https://www.linkedin.com/in/mishal-ashraf-ai">LinkedIn</a>
+    <a href="mailto:mishal7991@gmail.com">Email</a>
+  </div>
+</header>
+
+<main>
+
+<section id="about">
+  <h2>About</h2>
+  <p class="lead">I'm an AI Engineer with <strong>2 years of experience</strong> building LLM applications: retrieval, agents, and the <strong>evaluation and observability</strong> around them. I care about one question in most of my work: does the number we report actually tell us the system works?</p>
+  <p class="lead">I have an <strong>MS in AI from NUST</strong>, where I did research on multi-agent summarization of legal texts, and I've taught Python and machine learning to 60+ students from around the world.</p>
+  <div class="now">
+    <strong><span class="dot"></span>Now</strong>
+    <ul>
+      <li>Looking for a <strong>remote AI Engineer</strong> role (also open to Lahore).</li>
+      <li>Building <a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph</a>, a LangGraph RAG agent.</li>
+      <li>Revising my paper on multi-agent legal summarization.</li>
+      <li>Working through an AI system design syllabus, currently on inference and serving.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+
+  <article class="card">
+    <div class="metric"><span class="num">65.9%</span><span class="what">of questions silently returned no results</span></div>
+    <div>
+      <h3><a href="https://github.com/MishallAshraf/filtered-retrieval-bench">filtered-retrieval-bench <span class="arrow">↗</span></a></h3>
+      <div class="sub">Benchmark · pgvector, Supabase, Row Level Security</div>
+      <div class="body">
+        <p>Vector search under Postgres Row Level Security returned nothing for most users, with no error. I built a benchmark (57,600 embeddings, 648 questions) to measure it, then fixed it without changing the security policy: recall@10 of 0.96 or higher at a median latency of 11 ms or less.</p>
+        <p>I then turned it into a regression eval for AI coding agents, submitted to Supabase (<a href="https://github.com/supabase/evals/pull/488">open PR #488</a>). It caught Claude Code returning results in the wrong order.</p>
+      </div>
+      <p class="lesson"><b>Lesson:</b> the worst retrieval bugs don't throw errors. They just return less.</p>
+      <ul class="tags"><li>pgvector</li><li>Postgres</li><li>RLS</li><li>Evals</li><li>TypeScript</li></ul>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="metric"><span class="num">6 / 8</span><span class="what">duplicates found, 1 false positive in 20</span></div>
+    <div>
+      <h3><a href="https://github.com/MishallAshraf/issue-triage-agent">issue-triage-agent <span class="arrow">↗</span></a></h3>
+      <div class="sub">Agent · LangGraph, human approval gate</div>
+      <div class="body">
+        <p>An agent that triages GitHub issues. Every write needs human approval, it uses hybrid search to find related issues, and a stronger model double-checks possible duplicates. A 28-case eval suite runs in CI, so a change that makes it worse fails the build.</p>
+      </div>
+      <p class="lesson"><b>Lesson:</b> an approval gate is only useful if you also measure what it catches.</p>
+      <ul class="tags"><li>LangGraph</li><li>Hybrid search</li><li>CI evals</li><li>Python</li></ul>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="metric"><span class="num">hit@4 · MRR</span><span class="what">retrieval compared on accuracy and latency</span></div>
+    <div>
+      <h3><a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph <span class="arrow">↗</span></a></h3>
+      <div class="sub">RAG agent · in progress</div>
+      <div class="body">
+        <p>A LangGraph agent that uses RAG as one of its tools over PDF documents. It combines BM25 and vector search with reranking, keeps conversation memory in SQLite, exposes notes through an MCP server, and defines each bot in YAML. The first bot is a study assistant.</p>
+      </div>
+      <ul class="tags"><li>LangGraph</li><li>Chroma</li><li>BM25</li><li>Reranking</li><li>MCP</li></ul>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="metric"><span class="num">moderate → strong</span><span class="what">LLM judge agreement with human labels</span></div>
+    <div>
+      <h3>LLM judge for agent answers</h3>
+      <div class="sub">Fieldforce · evaluation</div>
+      <div class="body">
+        <p>I built an LLM judge that grades an agent's answers for faithfulness and clarity, and measured it against human labels with Cohen's kappa. Splitting "is it well written" and "is it honest" into separate rubric items raised agreement from moderate to strong.</p>
+      </div>
+      <p class="lesson"><b>Lesson:</b> a judge that mixes style and honesty in one score will reward confident wrong answers.</p>
+      <ul class="tags"><li>LLM-as-judge</li><li>Cohen's kappa</li><li>Langfuse</li></ul>
+    </div>
+  </article>
+</section>
+
+<section id="experience">
+  <h2>Experience</h2>
+  <div class="job">
+    <div class="top"><span class="t">Associate AI Engineer</span><span class="d mono">Jun 2025 – Sep 2026</span></div>
+    <div class="o">Fieldforce, Lahore</div>
+    <p>Tracing, metrics and evaluation for a LangGraph agent with a human approval step (OpenTelemetry, Langfuse, Axiom), and hybrid retrieval over company records with a vector index benchmark (DiskANN vs HNSW).</p>
+  </div>
+  <div class="job">
+    <div class="top"><span class="t">Research Student</span><span class="d mono">Nov 2023 – Nov 2024</span></div>
+    <div class="o">TUKL Lab, NUST, Islamabad</div>
+    <p>A multi-agent pipeline (CrewAI) that writes summaries of Pakistani court judgments, with quote-grounded fact sheets, source checks and targeted revision.</p>
+  </div>
+  <div class="job">
+    <div class="top"><span class="t">Online AI/ML Instructor</span><span class="d mono">Jul 2022 – present</span></div>
+    <div class="o">Preply, remote</div>
+    <p>Python, machine learning and deep learning for 60+ international students.</p>
+  </div>
+  <div class="job">
+    <div class="top"><span class="t">Lab Manager</span><span class="d mono">Jun 2022 – Aug 2023</span></div>
+    <div class="o">Deep Learning Lab, NCAI – NUST, Islamabad</div>
+    <p>Lab operations, internship programs and industry demos.</p>
+  </div>
+</section>
+
+<section id="research">
+  <h2>Research</h2>
+  <div class="paper">
+    <div class="title">The Brief Case: Multi-Agent Summarization of Legal Texts with Human Insight</div>
+    <div class="meta">M. Ashraf, A. Maqsood, A. Ul-Hasan, F. Shafait</div>
+    <p style="color:var(--ink-2);font-size:15px">Can a multi-agent pipeline write more faithful summaries of court judgments than a single LLM call, and do standard metrics notice the difference? Compared across open and closed models of different sizes, including quantized versions.</p>
+    <span class="pill">Manuscript in preparation</span>
+  </div>
+</section>
+
+<section id="learning">
+  <h2>Learning in public</h2>
+  <p class="lead">I'm working through an AI system design syllabus, one topic a day, from distributed systems basics up to serving and evaluating LLMs.</p>
+  <div class="total"><span class="big">32</span><span class="of">of 72 topics covered · 4 sections complete</span></div>
+  <div class="track" aria-hidden="true"><span style="width:44.4%"></span></div>
+
+  <details class="sec">
+    <summary><span class="n">Foundations</span><span class="c">9 / 9</span><span class="st mini"><span style="width:100%"></span></span></summary>
+    <ul><li>Scalability: vertical vs horizontal</li><li>Load balancing</li><li>Caching strategies (incl. KV vs prefix caching)</li><li>SQL vs NoSQL</li><li>Message queues and pub/sub</li><li>CAP theorem and consistency</li><li>Sharding and replication</li><li>Rate limiting</li><li>API design: REST, gRPC, streaming</li></ul>
+  </details>
+  <details class="sec">
+    <summary><span class="n">ML &amp; LLM fundamentals</span><span class="c">7 / 7</span><span class="st mini"><span style="width:100%"></span></span></summary>
+    <ul><li>Training vs inference, prefill vs decode</li><li>Embeddings</li><li>Transformer and attention basics</li><li>Tokens, context windows, long context</li><li>Reasoning models and test-time compute</li><li>Model selection: API vs open-weight, small vs large</li><li>Mixture of experts and multimodal models</li></ul>
+  </details>
+  <details class="sec">
+    <summary><span class="n">Data layer</span><span class="c">7 / 7</span><span class="st mini"><span style="width:100%"></span></span></summary>
+    <ul><li>Batch vs streaming pipelines</li><li>Document ingestion: PDFs, tables, OCR</li><li>Data quality, labeling, curation</li><li>Vector databases and ANN indexes (HNSW, IVF)</li><li>Feature stores</li><li>Data versioning and lineage</li><li>Synthetic data generation</li></ul>
+  </details>
+  <details class="sec">
+    <summary><span class="n">Training</span><span class="c">7 / 7</span><span class="st mini"><span style="width:100%"></span></span></summary>
+    <ul><li>Experiment tracking and model registry</li><li>GPU memory math and accelerators</li><li>Fine-tuning: SFT, LoRA, QLoRA</li><li>Preference tuning: DPO family</li><li>RL with verifiable rewards (GRPO)</li><li>Distillation into smaller models</li><li>Distributed training (FSDP, tensor, pipeline parallelism)</li></ul>
+  </details>
+  <details class="sec" open>
+    <summary><span class="n">Inference &amp; serving <span class="status">in progress</span></span><span class="c">2 so far</span><span class="st mini"><span style="width:25%"></span></span></summary>
+    <ul><li>Serving engines: vLLM, SGLang, TensorRT-LLM</li><li>Online, batch and streaming inference, TTFT</li></ul>
+  </details>
+</section>
+
+<section id="skills">
+  <h2>Skills</h2>
+  <dl class="skills">
+    <dt>GenAI &amp; retrieval</dt><dd>RAG, hybrid search, reranking, embeddings, tool-calling agents, multi-agent systems, quantization</dd>
+    <dt>Evaluation</dt><dd>Golden sets, regression evals, deterministic scorers, LLM-as-judge, faithfulness audits, ROUGE, BERTScore</dd>
+    <dt>Observability</dt><dd>OpenTelemetry, Langfuse, Axiom, tracing</dd>
+    <dt>Frameworks &amp; tools</dt><dd>LangGraph, LangChain, CrewAI, Hugging Face Transformers, MCP, Claude Code, Docker</dd>
+    <dt>Data</dt><dd>PostgreSQL, pgvector, pgvectorscale (DiskANN), Supabase, Chroma</dd>
+    <dt>Languages</dt><dd>Python, SQL, TypeScript</dd>
+  </dl>
+</section>
+
+<footer>
+  <p>Built by hand, no template. <button class="theme" id="theme" type="button">Toggle theme</button></p>
+</footer>
+
+</main>
+</div>
+
+<script>
+// highlight the current section in the side menu
+const links=[...document.querySelectorAll('nav.toc a')];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+// theme toggle, remembered per visitor
+const root=document.documentElement;
+try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch(e){}
+document.getElementById('theme').addEventListener('click',()=>{
+  const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme=dark?'light':'dark';
+  try{localStorage.setItem('theme',root.dataset.theme);}catch(e){}
+});
+</script>
+</body>
+</html>
