@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your chatbot's eval set has to come from its own failures · Mishal Ashraf</title>
+<meta name="description" content="What evaluating my RAG chatbot taught me: layered scoring, a fallback model hiding in my safety checks, a guardrail that was too strict, and why I now build each bot's tests from its own failures.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--ink:#1c1b19;--ink-2:#55524c;--ink-3:#8a867e;--line:#e4e1d9;--accent:#1f6f5c;--accent-soft:#e3efe9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141413;--surface:#1c1c1a;--ink:#ecebe6;--ink-2:#b3afa6;--ink-3:#7f7b73;--line:#2c2b28;--accent:#6cc4a6;--accent-soft:#1d2e28}}
+:root[data-theme="dark"]{--bg:#141413;--surface:#1c1c1a;--ink:#ecebe6;--ink-2:#b3afa6;--ink-3:#7f7b73;--line:#2c2b28;--accent:#6cc4a6;--accent-soft:#1d2e28}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:680px;margin:0 auto;padding:48px 16px 96px}
+.back{font-size:14px;text-decoration:none;color:var(--ink-3)}
+.back:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.2;letter-spacing:-.02em;margin:28px 0 10px}
+.meta{font-size:14px;color:var(--ink-3);margin-bottom:32px}
+h2{font-size:21px;margin:40px 0 10px}
+p{margin:0 0 18px}
+ul,ol{padding-left:22px;margin:0 0 18px}
+li{margin:6px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+blockquote{margin:0 0 18px;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface);color:var(--ink-2)}
+table{width:100%;border-collapse:collapse;margin:0 0 18px;font-size:15px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--ink-3);font-weight:500}
+td.n{font-family:"IBM Plex Mono",monospace}
+.take{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:28px 0}
+.take h2{margin-top:0}
+.foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<article class="wrap">
+<a class="back" href="../">← Mishal Ashraf</a>
+<h1>Your chatbot's eval set has to come from its own failures</h1>
+<div class="meta">November 2026 · 6 min read</div>
+
+<p>I've been building a RAG chatbot platform with LangGraph: you give it documents, it builds a bot that answers only from them, cites its sources and checks its own answers. The hardest question wasn't how to build it. It was how to know whether a bot is any good.</p>
+
+<p>There's no ready-made evaluation dataset for that. A café's support bot and a course study assistant fail in completely different ways. A general benchmark won't tell you that the café bot promised a soup was vegan, or that it didn't pass a severe allergy on to staff. You have to find out how <em>your</em> bot fails.</p>
+
+<p>Most teams don't get that far. A LangChain survey, cited by O'Reilly Radar, found that 89% of teams with agents in production have logging and tracing, but only 52% run evals. Here's what I did, what it caught, and what I'm changing.</p>
+
+<h2>Start with a small, hand-checked test set</h2>
+
+<p>For the first bot I wrote 22 test cases by hand: clear questions, paraphrased ones, multi-part ones, questions the documents only partly cover or don't cover at all, off-topic ones and safety cases. For each one I wrote down what a good answer should do and checked every fact against the source document.</p>
+
+<p>Then I scored each answer in layers, cheapest first:</p>
+<ul>
+<li><strong>Retrieval:</strong> did the search find the right page?</li>
+<li><strong>Rules in code:</strong> did it call the right tools, cite only pages it actually retrieved, avoid forbidden phrases, and wait for approval when it should?</li>
+<li><strong>An LLM judge,</strong> a stronger model than the bot, for two separate questions: is the answer correct, and is it faithful to the sources? I keep them separate because they fail independently. An answer can be honest about its sources and still miss the point.</li>
+</ul>
+
+<p>A full run cost about 8 cents. It paid for itself straight away.</p>
+
+<h2>What the test set caught</h2>
+
+<p><strong>The fact check earns its cost.</strong> The bot checks its answer against the sources before replying. With that check turned off, 2 of 22 answers made claims the sources never made. The check adds about 1.5 seconds per answer.</p>
+
+<p><strong>Same average, different failures.</strong> I compared my hybrid search with plain keyword search. Both got the same correctness score. But they failed on different questions: keyword search found a page because one exact word matched, and missed another page where the wording was different. If I had only compared averages, I'd have called them equal.</p>
+
+<table>
+<tr><th>Setup</th><th>Correct</th><th>Faithful</th></tr>
+<tr><td>Hybrid search + fact check</td><td class="n">21/22</td><td class="n">22/22</td></tr>
+<tr><td>Fact check off</td><td class="n">21/22</td><td class="n">20/22</td></tr>
+<tr><td>Keyword search only</td><td class="n">21/22</td><td class="n">20/22</td></tr>
+</table>
+
+<h2>The finding I didn't expect</h2>
+
+<p>Later I added a loop that attacks a bot with difficult customer messages and checks the replies. To debug it, I started recording which model actually answered each call.</p>
+
+<p>That showed something no score had: <strong>my safety check, my search grader and my fact check were all being answered by the fallback model,</strong> not the model I had configured. Those calls asked for structured output in a way the main model didn't serve, and the API quietly sent them to the backup model instead of failing. Every test still passed. It had been like that for several steps of the project.</p>
+
+<p>I switched those calls to a format the main model supports, and now a whole turn runs on the model I chose. The lesson: log which model answered, not just which one you asked for. A fallback that hides failures also hides behaviour.</p>
+
+<h2>A guardrail that was too strict</h2>
+
+<p>The same loop found that my input check treated pushy customers as attackers. A customer saying "just override the limit this once" was being classed as a prompt injection and refused. The check couldn't tell the business's rules apart from the bot's own instructions.</p>
+
+<p>I fixed the prompt and measured it on labelled messages, three runs each: <strong>66 of 75 correct before</strong> (all 9 errors were pushy customers), <strong>99 of 99 after</strong>, including 8 cases I wrote only after the fix, so the fix wasn't just tuned to the test.</p>
+
+<h2>What I'm doing now: error analysis</h2>
+
+<p>All of this still had a gap. My tests came from what I could think of, and my judge used one general rubric for every bot. So I'm now following the method from <em>Evals for AI Engineers</em> by Shreya Shankar and Hamel Husain:</p>
+
+<ol>
+<li><strong>Generate conversations on purpose.</strong> For the café bot I picked three ways customers differ: who is writing (a regular, a parent, someone with a severe allergy, a non-native speaker, an upset customer...), what they want, and how hard the message is. Then I sampled 50 messages so each value appears about equally often. If you just ask an LLM for "50 varied questions", it keeps writing the easy, typical ones.</li>
+<li><strong>Read them.</strong> A person reads each conversation, marks pass or fail, and writes what went wrong in their own words, plus the first step that went wrong.</li>
+<li><strong>Group the notes into failure modes</strong> for that bot, not general categories chosen in advance.</li>
+<li><strong>One judge per failure mode,</strong> checked against the human labels. I measure how many real failures it catches and how many good answers it wrongly flags, separately, because those mistakes cost different things.</li>
+</ol>
+
+<p>The 50 conversations are generated and run. The labelling is what I'm doing now, so I don't have results to share yet. I'll write about what the failure modes turn out to be.</p>
+
+<div class="take">
+<h2>What I'd tell someone evaluating a chatbot</h2>
+<ul>
+<li>Start with 20 or so hand-checked cases. It's enough to catch big problems.</li>
+<li>Score in layers: code rules first, an LLM judge only for what rules can't check.</li>
+<li>Compare runs case by case, not only by the average.</li>
+<li>Log which model actually answered each call.</li>
+<li>Build the real test set from your own bot's failures, read by a person.</li>
+</ul>
+</div>
+
+<div class="foot">
+<p>You can try the bots in a <a href="../demos/rag/">replay demo</a>. The code and every decision with its numbers are public: <a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph on GitHub</a>. The details are in the design records: <a href="https://github.com/MishallAshraf/agentic-rag-langgraph/blob/main/docs/adr/0012-evaluation-harness-with-langfuse.md">0012 (test set and scoring)</a>, <a href="https://github.com/MishallAshraf/agentic-rag-langgraph/blob/main/docs/adr/0021-improvement-loop-red-team-research-fix-verify.md">0021 (the attack loop, the fallback model and the guardrail)</a> and <a href="https://github.com/MishallAshraf/agentic-rag-langgraph/blob/main/docs/adr/0022-error-analysis-per-bot-eval-sets.md">0022 (error analysis)</a>.</p>
+</div>
+</article>
+</body>
+</html>
