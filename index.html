@@ -183,7 +183,7 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
     <ul>
       <li>New post: <a href="posts/llm-judge.html">My LLM judge failed answers that were right</a>.</li>
       <li>New demo: <a href="demos/rls/">RLS Search Explorer</a>, an interactive look at search results lost under Row Level Security.</li>
-      <li>Building <a href="https://github.com/MishallAshraf/agentic-rag-langgraph">agentic-rag-langgraph</a>, a LangGraph RAG agent.</li>
+      <li>New demo: <a href="demos/rag/">agentic RAG replay</a>, my chat frontend playing back real recorded answers.</li>
       <li>Revising my paper on multi-agent legal summarization.</li>
       <li>Learning how LLMs are served: vLLM, batching and time to first token.</li>
     </ul>
@@ -233,6 +233,8 @@ footer{color:var(--ink-3);font-size:13px;margin-top:64px}
       <div class="sub">RAG agent · in progress</div>
       <div class="body">
         <p>A LangGraph agent that uses RAG as one of its tools over PDF documents. It combines BM25 and vector search with reranking, keeps conversation memory in SQLite, exposes notes through an MCP server, and defines each bot in YAML. The first bot is a study assistant.</p>
+        <p>A FastAPI backend streams each step of the agent to a React frontend, so you can watch it search, check its answer against the sources, and cite them.</p>
+        <p><a class="try" href="demos/rag/">Try the replay demo →</a></p>
       </div>
       <ul class="tags"><li>LangGraph</li><li>Chroma</li><li>BM25</li><li>Reranking</li><li>MCP</li></ul>
     </div>
